@@ -1,0 +1,144 @@
+/* Print Styles for DTR System */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    line-height: 1.4;
+    color: #333;
+    background: white;
+}
+
+.container-print {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background: white;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #333;
+    padding-bottom: 15px;
+}
+
+.company-logo {
+    max-width: 100px;
+    margin-bottom: 10px;
+}
+
+.header h2 {
+    font-size: 20px;
+    margin: 10px 0 5px;
+    font-weight: bold;
+}
+
+.header div {
+    font-size: 11px;
+    margin: 3px 0;
+}
+
+.header .small {
+    font-size: 10px;
+    color: #666;
+}
+
+/* Table Styles */
+.table-print {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+}
+
+.table-print th {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.table-print td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    font-size: 11px;
+    word-wrap: break-word;
+}
+
+.table-print tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+.table-print tbody tr:hover {
+    background-color: #f0f0f0;
+}
+
+/* Signature Section */
+.signature {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 50px;
+    gap: 40px;
+}
+
+.signature .box {
+    flex: 1;
+    text-align: center;
+    font-size: 11px;
+}
+
+.signature .box div {
+    border-top: 1px solid #333;
+    padding-top: 5px;
+    margin-top: 40px;
+}
+
+/* No Print Styles */
+.no-print {
+    display: block;
+}
+
+/* Print Media Queries */
+@media print {
+    body {
+        margin: 0;
+        padding: 0;
+        background: white;
+    }
+
+    .container-print {
+        max-width: 100%;
+        margin: 0;
+        padding: 10mm;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    .table-print {
+        page-break-inside: avoid;
+    }
+
+    .signature {
+        page-break-inside: avoid;
+    }
+}
+
+/* Responsive */
+@media screen and (max-width: 600px) {
+    .container-print {
+        padding: 10px;
+    }
+
+    .signature {
+        flex-direction: column;
+    }
+}
