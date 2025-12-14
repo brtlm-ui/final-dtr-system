@@ -293,8 +293,8 @@ require_once '../includes/header.php';
                                         <tr>
                                             <td><?= htmlspecialchars($schedule['first_name'] . ' ' . $schedule['last_name']) ?></td>
                                             <td><?= htmlspecialchars($schedule['day_of_week']) ?></td>
-                                            <td><?= htmlspecialchars(substr($schedule['am_time_in'], 0, 5) . ' - ' . substr($schedule['am_time_out'], 0, 5)) ?></td>
-                                            <td><?= htmlspecialchars(substr($schedule['pm_time_in'], 0, 5) . ' - ' . substr($schedule['pm_time_out'], 0, 5)) ?></td>
+                                            <td><?= htmlspecialchars(date('g:i A', strtotime($schedule['am_time_in'])) . ' - ' . date('g:i A', strtotime($schedule['am_time_out']))) ?></td>
+                                            <td><?= htmlspecialchars(date('g:i A', strtotime($schedule['pm_time_in'])) . ' - ' . date('g:i A', strtotime($schedule['pm_time_out']))) ?></td>
                                             <td><?= htmlspecialchars($schedule['grace_period_minutes']) ?> mins</td>
                                             <td>
                                                 <button class="btn btn-sm btn-primary edit-schedule" 

@@ -41,10 +41,17 @@ try {
     }
 
     // Build base query: select reason rows with latest approval status (null -> pending) and get old/new values from audit
+    // Also fetch the actual clock time for the entry type (am_in, am_out, pm_in, pm_out)
     $sql = "SELECT r.reason_id, r.record_id, r.reason_type, r.reason_text, r.submitted_at, tr.record_date, e.employee_id, e.first_name, e.last_name,
                 COALESCE((SELECT ta.approval_status FROM time_approval ta WHERE ta.reason_id = r.reason_id ORDER BY ta.approved_at DESC LIMIT 1), 'pending') as approval_status,
                 (SELECT ra.old_value FROM reason_audit ra WHERE ra.reason_id = r.reason_id AND ra.new_value NOT IN ('approved','rejected','pending') ORDER BY ra.changed_at DESC LIMIT 1) as old_value,
-                (SELECT ra.new_value FROM reason_audit ra WHERE ra.reason_id = r.reason_id AND ra.new_value NOT IN ('approved','rejected','pending') ORDER BY ra.changed_at DESC LIMIT 1) as new_value
+                (SELECT ra.new_value FROM reason_audit ra WHERE ra.reason_id = r.reason_id AND ra.new_value NOT IN ('approved','rejected','pending') ORDER BY ra.changed_at DESC LIMIT 1) as new_value,
+                CASE r.reason_type
+                    WHEN 'am_in' THEN tr.am_in
+                    WHEN 'am_out' THEN tr.am_out
+                    WHEN 'pm_in' THEN tr.pm_in
+                    WHEN 'pm_out' THEN tr.pm_out
+                END as clock_time
             FROM time_reason r
             JOIN time_record tr ON r.record_id = tr.record_id
             JOIN employee e ON tr.employee_id = e.employee_id
@@ -166,6 +173,7 @@ function getReasonStatusBadge($status) {
                         <th>Date</th>
                         <th>Employee</th>
                         <th>Entry</th>
+                        <th>Clock Time</th>
                         <th>Change</th>
                         <th>Reason</th>
                         <th>Status</th>
@@ -176,7 +184,7 @@ function getReasonStatusBadge($status) {
                 <tbody>
                     <?php if (empty($records)): ?>
                         <tr>
-                            <td colspan="8" class="text-center py-4 text-muted">No reasons found</td>
+                            <td colspan="9" class="text-center py-4 text-muted">No reasons found</td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($records as $rec): ?>
@@ -198,6 +206,13 @@ function getReasonStatusBadge($status) {
                                     ?></span>
                                 </td>
                                 <td>
+                                    <?php if (!empty($rec['clock_time'])): ?>
+                                        <strong><?php echo htmlspecialchars(formatTime($rec['clock_time'])); ?></strong>
+                                    <?php else: ?>
+                                        <small class="text-muted">Not clocked</small>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
                                     <?php if (!empty($rec['old_value']) || !empty($rec['new_value'])): ?>
                                         <small>
                                             <span class="text-muted text-decoration-line-through"><?php echo htmlspecialchars(formatTime($rec['old_value'] ?? '—')); ?></span>
@@ -215,12 +230,19 @@ function getReasonStatusBadge($status) {
                                     <?php endif; ?>
                                 </td>
                                 <td>
+                                    <?php
+                                        if (!empty($rec['submitted_at'])) {
+                                            echo date('M j, Y', strtotime($rec['submitted_at'])) . '<br>' . 
+                                                 '<span class="text-muted">' . date('g:i A', strtotime($rec['submitted_at'])) . '</span>';
+                                        } else {
+                                            echo '—';
+                                        }
+                                    ?>
+                                </td>
+                                <td>
                                     <span class="badge badge-reason" style="<?php echo getReasonStatusBadge($rec['approval_status']); ?>">
                                         <?php echo ucfirst($rec['approval_status']); ?>
                                     </span>
-                                </td>
-                                <td>
-                                    <small><?php echo !empty($rec['submitted_at']) ? formatDate($rec['submitted_at']) : '—'; ?></small>
                                 </td>
                                 <td>
                                     <div class="btn-group btn-group-sm">
