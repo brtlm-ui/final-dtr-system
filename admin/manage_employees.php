@@ -48,6 +48,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $stmt = $conn->prepare("SELECT COUNT(*) FROM employee WHERE employee_id = ?");
         $stmt->execute([$employeeId]);
         if ($stmt->fetchColumn() > 0) $fieldErrors['employee_id'] = 'This Employee ID already exists';
+
+        // Also prevent re-using an ID that already has a time record (any date - prevents confusion)
+        // This typically happens if an employee row was deleted manually but time_record rows remain.
+        if (!isset($fieldErrors['employee_id'])) {
+            $tstmt = $conn->prepare("SELECT COUNT(*) FROM time_record WHERE employee_id = ? LIMIT 1");
+            $tstmt->execute([$employeeId]);
+            $existingCount = $tstmt->fetchColumn();
+            if ($existingCount > 0) {
+                $fieldErrors['employee_id'] = "This Employee ID already has {$existingCount} time record(s) in the database (likely from a deleted employee). Use a different ID or ask admin to clean up orphaned records for ID {$employeeId}.";
+            }
+        }
     }
 
     if (empty($pin)) {

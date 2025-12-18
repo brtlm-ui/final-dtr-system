@@ -1,27 +1,4 @@
 <?php
-/**
- * SMTP / Mail Configuration Template (Professional + Aesthetic)
- * ------------------------------------------------------------------
- * SECURITY:
- *  - Do NOT commit real passwords. Use environment variables if possible.
- *  - For Gmail, create an App Password (requires 2FA) instead of using your
- *    normal account password.
- *  - For other providers (SendGrid, Mailgun, AWS SES), set host/port/encryption
- *    accordingly.
- *
- * AESTHETIC / BRANDING:
- *  - Colors & logo below can be used by `includes/email_template.php` when
- *    generating a consistent HTML email shell.
- *  - Adjust typography and spacing to match your brand.
- *
- * ENVIRONMENT VARIABLE FALLBACKS:
- *  - If deployed in production, set ENV vars (e.g. in Apache, Docker, or .env loader).
- *    Example (PowerShell): $env:SMTP_HOST="smtp.mailprovider.com"
- *
- * BACKWARD COMPATIBILITY:
- *  - Legacy keys `use_smtp`, `smtp`, `from_email`, `from_name` retained so existing
- *    send_mail() logic continues to work.
- */
 
 return [
     // Toggle SMTP usage; if false native mail() is used.

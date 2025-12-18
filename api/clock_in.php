@@ -24,7 +24,25 @@ $employeeId = $_SESSION['confirm_employee_id'];
 try {
     // Check if already clocked in today
     if (hasClockInToday($conn, $employeeId)) {
-        echo json_encode(['success' => false, 'message' => 'You have already clocked in today']);
+        // Debug: get the existing record details
+        $debugStmt = $conn->prepare("SELECT record_id, record_date, am_in, created_at FROM time_record WHERE employee_id = ? AND DATE(record_date) = CURDATE() LIMIT 1");
+        $debugStmt->execute([$employeeId]);
+        $existingRecord = $debugStmt->fetch();
+        
+        // Check if employee row even exists
+        $empCheck = $conn->prepare("SELECT employee_id, first_name, last_name FROM employee WHERE employee_id = ? LIMIT 1");
+        $empCheck->execute([$employeeId]);
+        $empExists = $empCheck->fetch();
+        
+        $debugInfo = "Existing record found: ID #{$existingRecord['record_id']}, Date: {$existingRecord['record_date']}, AM In: {$existingRecord['am_in']}. ";
+        if (!$empExists) {
+            $debugInfo .= "WARNING: Employee row does NOT exist (orphaned time_record from deleted employee). Ask admin to delete record #{$existingRecord['record_id']} or use a different Employee ID.";
+        }
+        
+        echo json_encode([
+            'success' => false, 
+            'message' => 'You have already clocked in today. ' . $debugInfo
+        ]);
         exit();
     }
 

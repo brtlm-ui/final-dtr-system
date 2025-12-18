@@ -1,5 +1,8 @@
 // Confirm and Clock In
-document.getElementById('confirmForm')?.addEventListener('submit', async function(e) {
+// NOTE: employee/confirm.php implements its own submit handler (with the mandatory reason modal).
+// Avoid double-submitting clock-in requests by only attaching this handler when the modal is absent.
+const __confirmForm = document.getElementById('confirmForm');
+if (__confirmForm && !document.getElementById('clockReasonModal')) __confirmForm.addEventListener('submit', async function(e) {
     e.preventDefault();
     
     const errorDiv = document.getElementById('confirm-error');
